@@ -3,6 +3,7 @@ package gestao.controller;
 
 import gestao.model.Cliente;
 import gestao.service.ClienteService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,37 +18,42 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    // CREATE - Cadastrar cliente
     @PostMapping
     public Cliente criar(@RequestBody Cliente cliente) {
         return clienteService.salvar(cliente);
     }
 
-    // READ - Listar todos os clientes
     @GetMapping
     public List<Cliente> listarTodos() {
         return clienteService.listarTodos();
     }
 
-    // READ - Buscar cliente por ID
     @GetMapping("/{id}")
-    public Cliente buscarPorId(@PathVariable Long id) {
-        return clienteService.buscarPorId(id);
+    public ResponseEntity<Cliente> buscarPorId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(clienteService.buscarPorId(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // UPDATE - Atualizar cliente
     @PutMapping("/{id}")
-    public Cliente atualizar(@PathVariable Long id, @RequestBody Cliente cliente) {
-        Cliente clienteExistente = clienteService.buscarPorId(id);
+    public ResponseEntity<Cliente> atualizar(
+            @PathVariable Long id,
+            @RequestBody Cliente cliente) {
+        try {
+            Cliente clienteExistente = clienteService.buscarPorId(id);
 
-        clienteExistente.setNome(cliente.getNome());
-        clienteExistente.setEmail(cliente.getEmail());
-        clienteExistente.setTelefone(cliente.getTelefone());
+            clienteExistente.setNome(cliente.getNome());
+            clienteExistente.setEmail(cliente.getEmail());
+            clienteExistente.setTelefone(cliente.getTelefone());
 
-        return clienteService.salvar(clienteExistente);
+            return ResponseEntity.ok(clienteService.salvar(clienteExistente));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // DELETE - Excluir cliente
     @DeleteMapping("/{id}")
     public void excluir(@PathVariable Long id) {
         clienteService.excluir(id);

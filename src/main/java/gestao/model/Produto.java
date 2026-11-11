@@ -17,7 +17,9 @@ public class Produto {
     private Double preco;
     private Integer quantidadeEstoque;
 
-    public Produto();
+    public Produto() {
+
+    }
 
     public Long getId() {
         return id;

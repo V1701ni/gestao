@@ -1,7 +1,9 @@
+
 package gestao.controller;
 
 import gestao.model.Produto;
 import gestao.service.ProdutoService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,20 +29,30 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public Produto buscarPorId(@PathVariable Long id) {
-        return produtoService.buscarPorId(id);
+    public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(produtoService.buscarPorId(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public Produto atualizar(@PathVariable Long id, @RequestBody Produto produto) {
-        Produto produtoExistente = produtoService.buscarPorId(id);
+    public ResponseEntity<Produto> atualizar(
+            @PathVariable Long id,
+            @RequestBody Produto produto) {
+        try {
+            Produto produtoExistente = produtoService.buscarPorId(id);
 
-        produtoExistente.setNome(produto.getNome());
-        produtoExistente.setDescricao(produto.getDescricao());
-        produtoExistente.setPreco(produto.getPreco());
-        produtoExistente.setQuantidadeEstoque(produto.getQuantidadeEstoque());
+            produtoExistente.setNome(produto.getNome());
+            produtoExistente.setDescricao(produto.getDescricao());
+            produtoExistente.setPreco(produto.getPreco());
+            produtoExistente.setQuantidadeEstoque(produto.getQuantidadeEstoque());
 
-        return produtoService.salvar(produtoExistente);
+            return ResponseEntity.ok(produtoService.salvar(produtoExistente));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
